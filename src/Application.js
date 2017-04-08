@@ -29,43 +29,48 @@ exports = Class(GC.Application, function () {
       zIndex: 0
     });
 
-
-    var gridWidth = 680;
-    var gridHeight = 560;
+    var grid_padding = 20;
+    var gridWidth = baseWidth - (grid_padding * 2);
+    var gridHeight = 520;
     var num_rows = 8;
     var num_cols = 8;
 
     var num_gems = 5;
     var gridview = new GridView({
-      // backgroundColor: '#ff0000',
-      x: device.width / 2 - (gridWidth / 2),
-      y: 350,
+      superview: background,
+      backgroundColor: '#ff0000',
+      x: grid_padding,
+      y: 320,
       width: gridWidth,
       height: gridHeight,
       cols: num_cols,
       rows: num_rows,
+      horizontalGutter: 2,
+      verticalGutter: 2,
       autoCellSize: true,
-      hideOutOfRange: true, //Hide any cells outside of the grid
-      showInRange: true     //Make cells in the grid range visible
+      // hideOutOfRange: true, //Hide any cells outside of the grid
+      // showInRange: true     //Make cells in the grid range visible
     });
 
     var tileViews = []
     for (var col_idx = 0; col_idx < num_cols; col_idx++) {
       for (var row_idx = 0; row_idx < num_rows; row_idx++) {
         var tileType = Math.floor((Math.random() * num_gems) + 1);
-
+        var tileWidth = (gridWidth / num_cols) - 2;
+        var tileHeight = (gridHeight / num_rows) - 2;
         tileViews.push(new ui.ImageView({
           superview: gridview,
+          row: row_idx,
+          col: col_idx,
           image: 'resources/images/gems/gem_0' + tileType + '.png',
-          width: gridWidth / num_cols,
-          height: gridHeight / num_rows,
-          x: 100,
-          y: 100
+          width: tileWidth,
+          height: tileHeight,
+          x: (tileWidth + 2) * row_idx,
+          y: (tileHeight + 2) * col_idx,
         }))
       }
     }
 
-    rootView.push(titlescreen);
 
   };
 
