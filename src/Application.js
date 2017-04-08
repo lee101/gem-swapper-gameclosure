@@ -38,7 +38,6 @@ exports = Class(GC.Application, function () {
     var num_gems = 5;
     var gridview = new GridView({
       superview: background,
-      backgroundColor: '#ff0000',
       x: grid_padding,
       y: 320,
       width: gridWidth,
@@ -52,13 +51,24 @@ exports = Class(GC.Application, function () {
       // showInRange: true     //Make cells in the grid range visible
     });
 
-    var tileViews = []
+    function isNeighboringTile(tile1, tile2) {
+      var xDifference = tile1.row;
+      var yDifference = tile1.col;
+      return Math.abs(xDifference) == 1 && Math.abs(yDifference) == 1;
+    }
+
+    function swapTiles(tile1, tile2) {
+      
+    }
+
+    var tileViews = [];
+    var currentSelectedTile = null;
     for (var col_idx = 0; col_idx < num_cols; col_idx++) {
       for (var row_idx = 0; row_idx < num_rows; row_idx++) {
         var tileType = Math.floor((Math.random() * num_gems) + 1);
         var tileWidth = (gridWidth / num_cols) - 2;
         var tileHeight = (gridHeight / num_rows) - 2;
-        tileViews.push(new ui.ImageView({
+        var tileImageView = new ui.ImageView({
           superview: gridview,
           row: row_idx,
           col: col_idx,
@@ -67,7 +77,23 @@ exports = Class(GC.Application, function () {
           height: tileHeight,
           x: (tileWidth + 2) * row_idx,
           y: (tileHeight + 2) * col_idx,
-        }))
+          opacity: .7,
+          transition: 'opacity 4s',
+        });
+
+        tileImageView.on('InputSelect', function () {
+          if(!currentSelectedTile) {
+            currentSelectedTile = this;
+          }
+          else {
+            if (isNeighboringTile(this, currentSelectedTile)) {
+              swapTiles(this, currentSelectedTile)
+            }
+          }
+          this.style.opacity = 1;
+        });
+
+        tileViews.push(tileImageView)
       }
     }
 
