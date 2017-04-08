@@ -6,6 +6,7 @@
  * and the game screen shown.
  */
 
+import device;
 import ui.View;
 import ui.ImageView;
 
@@ -13,11 +14,19 @@ import ui.ImageView;
  * a child of the main application. When this class is instantiated,
  * it adds the start button as a child.
  */
+
+var boundsWidth = 576;
+var boundsHeight = 1024;
+var baseWidth = boundsWidth;
+var baseHeight = device.screen.height * (boundsWidth / device.screen.width);
 exports = Class(ui.ImageView, function (supr) {
 	this.init = function (opts) {
 		opts = merge(opts, {
 			x: 0,
 			y: 0,
+			zIndex: 0,
+			width: baseWidth,
+			height: baseHeight,
 			image: "resources/images/ui/background.png"
 		});
 

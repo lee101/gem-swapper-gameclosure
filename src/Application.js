@@ -2,26 +2,68 @@ import device;
 import ui.StackView as StackView;
 
 import ui.TextView as TextView;
+
+import ui.ImageView;
+import ui.widget.GridView as GridView;
 import src.TitleScreen as TitleScreen;
 
 
+var boundsWidth = 576;
+var boundsHeight = 1024;
+var baseWidth = boundsWidth;
+var baseHeight = device.screen.height * (boundsWidth / device.screen.width); //864
+var scale = device.screen.width / baseWidth;
 exports = Class(GC.Application, function () {
 
   this.initUI = function () {
-    var titlescreen = new TitleScreen();
-    // Create a stackview of size 320x480, then scale it to fit horizontally
-    // Add a new StackView to the root of the scene graph
-    var rootView = new StackView({
-      superview: this,
-      // x: device.width / 2 - 160,
-      // y: device.height / 2 - 240,
+    //scale the root view
+    this.view.style.scale = scale;
+
+    var background = new ui.ImageView({
+      superview: this.view,
       x: 0,
       y: 0,
-      width: 320,
-      height: 480,
-      clip: true,
-      scale: device.width / 320
+      width: baseWidth,
+      height: baseHeight,
+      image: "resources/images/ui/background.png",
+      zIndex: 0
     });
+
+
+    var gridWidth = 680;
+    var gridHeight = 560;
+    var num_rows = 8;
+    var num_cols = 8;
+
+    var num_gems = 5;
+    var gridview = new GridView({
+      // backgroundColor: '#ff0000',
+      x: device.width / 2 - (gridWidth / 2),
+      y: 350,
+      width: gridWidth,
+      height: gridHeight,
+      cols: num_cols,
+      rows: num_rows,
+      autoCellSize: true,
+      hideOutOfRange: true, //Hide any cells outside of the grid
+      showInRange: true     //Make cells in the grid range visible
+    });
+
+    var tileViews = []
+    for (var col_idx = 0; col_idx < num_cols; col_idx++) {
+      for (var row_idx = 0; row_idx < num_rows; row_idx++) {
+        var tileType = Math.floor((Math.random() * num_gems) + 1);
+
+        tileViews.push(new ui.ImageView({
+          superview: gridview,
+          image: 'resources/images/gems/gem_0' + tileType + '.png',
+          width: gridWidth / num_cols,
+          height: gridHeight / num_rows,
+          x: 100,
+          y: 100
+        }))
+      }
+    }
 
     rootView.push(titlescreen);
 
