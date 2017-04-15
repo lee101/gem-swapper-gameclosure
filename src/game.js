@@ -83,7 +83,7 @@ exports = (function () {
     }
 
     function find_three_or_more_from(tile) {
-      var foundTiles = find_three_or_more_horizontal_from(tile).concat(find_three_or_more_vertical_from(tile))
+      var foundTiles = find_three_or_more_horizontal_from(tile).concat(find_three_or_more_vertical_from(tile));
       return foundTiles;
     }
 
@@ -203,7 +203,7 @@ exports = (function () {
         }
         for (var col = 0; col < numDeleted; col++) {
           var tileImageView = createTile(col, row);
-          tileImageView._opts.y = tileImageView._opts.y - (numDeleted * tileImageView._opts.height)
+          tileImageView._opts.y = tileImageView._opts.y - (numDeleted * tileImageView._opts.height);
           var tileToAnimateTo = tileViews[col][row];
           falldownAnimateTo(tileView, tileToAnimateTo, numDeleted);
         }
@@ -222,7 +222,7 @@ exports = (function () {
     function swapTiles(tile1, tile2) {
       var tile1Pos = {x: tile1._opts.x, y: tile1._opts.y};
       var tile2Pos = {x: tile2._opts.x, y: tile2._opts.y};
-      swap_tile_data(tile1, tile2)
+      swap_tile_data(tile1, tile2);
 
       var foundTiles = find_three_or_more_from(tile1);
       var foundTiles2 = find_three_or_more_from(tile2);
@@ -301,7 +301,7 @@ exports = (function () {
     }
 
     for (var col_idx = 0; col_idx < level.num_cols; col_idx++) {
-      var views = []
+      var views = [];
       for (var row_idx = 0; row_idx < level.num_rows; row_idx++) {
         var tileImageView = createTile(col_idx, row_idx);
 
@@ -309,7 +309,7 @@ exports = (function () {
       }
       tileViews.push(views)
     }
-  }
+  };
 
   return game;
 }());
