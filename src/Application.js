@@ -22,6 +22,7 @@ exports = Class(GC.Application, function () {
     this.view.style.scale = scale;
     var level = {};
     level.numMoves = 50;
+    level.score = 0;
 
     var background = new ui.ImageView({
       superview: this.view,
@@ -43,7 +44,7 @@ exports = Class(GC.Application, function () {
       zIndex: 0
     });
 
-    var scoreTextView = new TextView({
+    level.scoreTextView = new TextView({
       superview: backgroundHeader,
       x: 0,
       y: 65,
@@ -55,9 +56,9 @@ exports = Class(GC.Application, function () {
       horizontalAlign: 'center',
       wrap: false,
       color: '#FFFFFF',
-      text: '0'
+      text: level.score,
     });
-    var movesTextView = new TextView({
+    level.movesTextView = new TextView({
       superview: background,
       x: 0,
       y: baseHeight - 100,

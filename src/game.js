@@ -104,6 +104,31 @@ exports = (function(){
 			tile2._opts.col = tile1Col;
 		}
 
+		function removeTiles(tiles) {
+			for (var i = 0; i < tiles.length; i++) {
+				var tile = tiles[i];
+				var tileRow = tile._opts.row;
+				var tileCol = tile._opts.col;
+				var tileView = tileViews[tileCol][tileRow];
+				tileView.removeFromSuperview();
+				tileViews[tileCol][tileRow] = null;
+			}
+		}
+
+		function addScore(score) {
+			level.score += score;
+			level.scoreTextView.setText(level.score);
+		}
+
+		function useMove() {
+			level.numMoves--;
+			level.movesTextView.setText('Moves: ' + level.numMoves);
+		}
+
+		function turnEnd(tiles) {
+			
+		}
+
 		function swapTiles(tile1, tile2) {
 			var tile1Pos = {x: tile1._opts.x, y: tile1._opts.y};
 			var tile2Pos = {x: tile2._opts.x, y: tile2._opts.y};
@@ -112,6 +137,12 @@ exports = (function(){
 			var foundTiles = find_three_or_more_from(tile1);
 			var foundTiles2 = find_three_or_more_from(tile2);
 			if (foundTiles.length || foundTiles2.length) {
+				useMove();
+				addScore(foundTiles.length + foundTiles2.length);
+				removeTiles(foundTiles);
+				removeTiles(foundTiles2);
+
+
 				animate(tile1).now(tile2Pos, 300, animate.easeIn).then(function () {
 					tile1._opts.x = tile2Pos.x;
 					tile1._opts.y = tile2Pos.y;
