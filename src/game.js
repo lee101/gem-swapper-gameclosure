@@ -104,17 +104,14 @@ exports = (function () {
       tile2._opts.col = tile1Col;
     }
 
-    function set_tile_to(tile1, tile2) {
-      var tile1Row = tile1._opts.row;
-      var tile1Col = tile1._opts.col;
+    function set_tile_to(tile, pos) {
+      var tile1Row = tile._opts.row;
+      var tile1Col = tile._opts.col;
 
-      var tile2Row = tile2._opts.row;
-      var tile2Col = tile2._opts.col;
+      tileViews[pos.col][pos.row] = tile;
 
-      tileViews[tile1Col][tile1Row] = tile2;
-
-      tile1._opts.row = tile2Row;
-      tile1._opts.col = tile2Col;
+      tile._opts.row = pos.row;
+      tile._opts.col = pos.col;
     }
 
     function removeTiles(tiles) {
@@ -177,10 +174,11 @@ exports = (function () {
     }
 
 
-    function falldownAnimateTo(tileView, tileToAnimateTo, numDeleted) {
-      animate(tileView).now({y: tileToAnimateTo._opts.y}, 300 * numDeleted, animate.easeIn).then(function () {
-        tileView._opts.y = tileToAnimateTo._opts.y;
-        set_tile_to(tileView, tileToAnimateTo);
+    function falldownAnimateTo(tileView, col, row, numDeleted) {
+      var y = calculateY(col);
+      set_tile_to(tileView, {row: row, col: col});
+      animate(tileView).now({y: y}, 300 * numDeleted, animate.easeIn).then(function () {
+        tileView._opts.y = y;
       })
     }
 
@@ -195,17 +193,18 @@ exports = (function () {
             if (numDeleted == 0) {
               continue;
             }
-            var tileToAnimateTo = tileViews[col + numDeleted][row];
 
-            falldownAnimateTo(tileView, tileToAnimateTo, numDeleted);
+            var column_target_idx = col + numDeleted;
+            falldownAnimateTo(tileView, column_target_idx, row, numDeleted);
           }
 
         }
         for (var col = 0; col < numDeleted; col++) {
-          var tileImageView = createTile(col, row);
-          tileImageView._opts.y = tileImageView._opts.y - (numDeleted * tileImageView._opts.height);
-          var tileToAnimateTo = tileViews[col][row];
-          falldownAnimateTo(tileView, tileToAnimateTo, numDeleted);
+          var yOffset = -numDeleted
+          var tileImageView = createTile(col, row, yOffset);
+          // var initialY = calculateY(col);
+          // animate(tileImageView).now({y: initialY - (numDeleted * tileImageView._opts.height)}, 0, animate.easeIn);
+          falldownAnimateTo(tileImageView, col, row, numDeleted);
         }
       }
     }
@@ -262,8 +261,14 @@ exports = (function () {
 
     var tileViews = [];
     var currentSelectedTile = null;
-
-    function createTile(col_idx, row_idx) {
+    function calculateY(col_idx) {
+      var tileHeight = (level.gridHeight / level.num_rows) - 2;
+      return (tileHeight + 2) * col_idx
+    }
+    function createTile(col_idx, row_idx, yOffset) {
+      if (typeof yOffset == 'undefined') {
+        yOffset = 0;
+      }
       var tileType = Math.floor((Math.random() * level.num_gems) + 1);
       var tileWidth = (level.gridWidth / level.num_cols) - 2;
       var tileHeight = (level.gridHeight / level.num_rows) - 2;
@@ -277,7 +282,7 @@ exports = (function () {
         width: tileWidth,
         height: tileHeight,
         x: (tileWidth + 2) * row_idx,
-        y: (tileHeight + 2) * col_idx,
+        y: calculateY(col_idx) + (yOffset * tileHeight),
         opacity: .7,
       });
 
