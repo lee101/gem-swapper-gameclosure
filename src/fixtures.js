@@ -7,5 +7,13 @@ exports = (function(){
     4: 'red',
     5: 'green',
   };
+  fixtures.gleamColors = [
+    'blue',
+    'green',
+    'purple',
+    'red',
+    'white',
+    'yellow',
+  ];
   return fixtures;
 }());
