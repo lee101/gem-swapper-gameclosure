@@ -178,7 +178,7 @@ exports = (function () {
       var y = calculateY(col);
       set_tile_to(tileView, {row: row, col: col});
       tileView._opts.y = y;
-      animate(tileView).now({y: y}, 300 * numDeleted, animate.easeIn).then(function () {
+      animate(tileView).now({y: y}, 300 * (numDeleted - ((numDeleted - 1)/10.0)), animate.easeOutBounce).then(function () {
         var foundTiles = find_three_or_more_from(tileView);
         if (foundTiles.length) {
           turnEnd(foundTiles);
