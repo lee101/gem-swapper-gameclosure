@@ -24,6 +24,9 @@ exports = (function () {
       rows: level.num_rows,
     });
 
+    var tileViews = [];
+    var currentSelectedTile = null;
+
     function isNeighboringTile(tile1, tile2) {
       var xDifference = Math.abs(tile1._opts.row - tile2._opts.row);
       var yDifference = Math.abs(tile1._opts.col - tile2._opts.col);
@@ -172,9 +175,17 @@ exports = (function () {
 
     function useMove() {
       level.numMoves--;
-      level.movesTextView.setText('Moves: ' + level.numMoves);
+      if (level.numMoves >= 0) {
+        level.movesTextView.setText('Moves: ' + level.numMoves);
+      }
     }
 
+    function resetCounters() {
+      level.numMoves = 50;
+      level.movesTextView.setText('Moves: ' + level.numMoves);
+      level.score = 0;
+      level.scoreTextView.setText(level.score);
+    }
 
     function falldownAnimateTo(tileView, col, row, numDeleted) {
       var y = calculateY(col);
@@ -188,7 +199,8 @@ exports = (function () {
       })
     }
 
-    function falldown() {
+    function fallDown() {
+      level.lastFallingTime = Date.now();
       for (var row = 0; row < level.num_rows; row++) {
         var numDeleted = 0;
         for (var col = level.num_cols - 1; col >= 0; col--) {
@@ -219,7 +231,7 @@ exports = (function () {
       sparkle(tiles);
       removeTiles(tiles);
       // should generate different tiles
-      falldown(tiles);
+      fallDown();
     }
 
     function swapTiles(tile1, tile2) {
@@ -231,6 +243,10 @@ exports = (function () {
       var foundTiles2 = find_three_or_more_from(tile2);
       if (foundTiles.length || foundTiles2.length) {
         useMove();
+        if (level.numMoves < 0) {
+          level.numMoves = 0;
+          return;
+        }
 
         tile1._opts.x = tile2Pos.x;
         tile1._opts.y = tile2Pos.y;
@@ -249,8 +265,24 @@ exports = (function () {
       }
     }
 
-    var tileViews = [];
-    var currentSelectedTile = null;
+    setInterval(function () {
+      if (level.numMoves <=0 && level.lastFallingTime + (500 * level.num_cols) < Date.now()) {
+        gameOver();
+      }
+    }, 1000);
+
+    function gameOver() {
+      sparkle(flatten(tileViews));
+      for (var col = 0; col < tileViews.length; col++) {
+        for (var row = 0; row < tileViews[col].length; row++) {
+          var tile = tileViews[col][row];
+          tile.removeFromSuperview();
+        }
+      }
+      resetCounters();
+      currentSelectedTile = null;
+    }
+
     function calculateY(col_idx) {
       var tileHeight = (level.gridHeight / level.num_rows) - 2;
       return (tileHeight + 2) * col_idx
@@ -304,16 +336,24 @@ exports = (function () {
       return tileImageView;
     }
 
-    for (var col_idx = 0; col_idx < level.num_cols; col_idx++) {
-      var views = [];
-      for (var row_idx = 0; row_idx < level.num_rows; row_idx++) {
-        var tileImageView = createTile(col_idx, row_idx);
+    function initializeTiles() {
+      for (var col_idx = 0; col_idx < level.num_cols; col_idx++) {
+        var views = [];
+        for (var row_idx = 0; row_idx < level.num_rows; row_idx++) {
+          var tileImageView = createTile(col_idx, row_idx);
 
-        views.push(tileImageView)
+          views.push(tileImageView)
+        }
+        tileViews.push(views)
       }
-      tileViews.push(views)
     }
+    initializeTiles();
+    sparkle(flatten(tileViews))
   };
+
+  function flatten(arr) {
+    return [].concat.apply([], arr);
+  }
 
   return game;
 }());
