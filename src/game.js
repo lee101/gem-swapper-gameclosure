@@ -288,20 +288,29 @@ exports = (function () {
         opacity: .7,
       });
 
-      tileImageView.on('InputSelect', function () {
+      function tryToMoveTo(tile) {
+        currentSelectedTile.style.opacity = .7;
+        if (isNeighboringTile(tile, currentSelectedTile)) {
+          swapTiles(tile, currentSelectedTile)
+        }
+        currentSelectedTile = null;
+      }
+
+      tileImageView.on('InputStart', function () {
         if (!currentSelectedTile) {
           currentSelectedTile = this;
           this.style.opacity = 1;
         }
         else {
-          currentSelectedTile.style.opacity = .7;
-          if (isNeighboringTile(this, currentSelectedTile)) {
-            swapTiles(this, currentSelectedTile)
-
-          }
-          else {
-          }
-          currentSelectedTile = null;
+          tryToMoveTo(this);
+        }
+      });
+      tileImageView.on('InputMove', function () {
+        if (!currentSelectedTile || this == currentSelectedTile) {
+          return;
+        }
+        else {
+          tryToMoveTo(this);
         }
       });
       return tileImageView;
