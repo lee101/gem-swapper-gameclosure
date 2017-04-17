@@ -147,17 +147,19 @@ exports = (function () {
             y: yPos,
             opacity: .6,
           });
+          var animationTime = 550;
+          var fadeStart = 250;
           animate(sparkleImageView).now({
               x: xPos - 100,
               y: yPos - 100,
               width: 200,
               height: 200
             },
-            500, animate.easeIn
+            animationTime, animate.easeOutCubic
           ).then((function () {
             this.removeFromSuperview();
           }).bind(sparkleImageView));
-          animate(sparkleImageView).wait(250).then({opacity: 0}, 250, animate.easeIn)
+          animate(sparkleImageView).wait(fadeStart).then({opacity: 0}, animationTime - fadeStart, animate.easeIn)
         }
 
       }
@@ -186,7 +188,7 @@ exports = (function () {
       })
     }
 
-    function falldown(tiles, callback) {
+    function falldown() {
       for (var row = 0; row < level.num_rows; row++) {
         var numDeleted = 0;
         for (var col = level.num_cols - 1; col >= 0; col--) {
@@ -230,33 +232,19 @@ exports = (function () {
       if (foundTiles.length || foundTiles2.length) {
         useMove();
 
-        var calledTimes = 0;
-
-        function whenCalledTwice(fn) {
-          calledTimes++;
-          if (calledTimes == 2) {
-            fn();
-          }
-        }
-
-        var animationFinish = function () {
-          turnEnd(foundTiles.concat(foundTiles2))
-        };
         tile1._opts.x = tile2Pos.x;
         tile1._opts.y = tile2Pos.y;
-        animate(tile1).now(tile2Pos, 300, animate.easeIn).then(function () {
-
-          whenCalledTwice(animationFinish);
-        });
         tile2._opts.x = tile1Pos.x;
         tile2._opts.y = tile1Pos.y;
-        animate(tile2).now(tile1Pos, 300, animate.easeIn).then(function () {
-          whenCalledTwice(animationFinish);
+        animate(tile1).now(tile2Pos, 300, animate.easeIn).then(function () {
+          turnEnd(foundTiles.concat(foundTiles2))
         });
+
+        animate(tile2).now(tile1Pos, 300, animate.easeIn);
       }
       else {
-        animate(tile1).now(tile2Pos, 150, animate.easeIn).then(tile1Pos, 150, animate.easeOut);
-        animate(tile2).now(tile1Pos, 150, animate.easeIn).then(tile2Pos, 150, animate.easeOut);
+        animate(tile1).now(tile2Pos, 150, animate.easeIn).then(tile1Pos, 150, animate.easeOutBounce);
+        animate(tile2).now(tile1Pos, 150, animate.easeIn).then(tile2Pos, 150, animate.easeOutBounce);
         swap_tile_data(tile1, tile2)
       }
     }
