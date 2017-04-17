@@ -177,8 +177,8 @@ exports = (function () {
     function falldownAnimateTo(tileView, col, row, numDeleted) {
       var y = calculateY(col);
       set_tile_to(tileView, {row: row, col: col});
+      tileView._opts.y = y;
       animate(tileView).now({y: y}, 300 * numDeleted, animate.easeIn).then(function () {
-        tileView._opts.y = y;
       })
     }
 
@@ -200,10 +200,8 @@ exports = (function () {
 
         }
         for (var col = 0; col < numDeleted; col++) {
-          var yOffset = -numDeleted
+          var yOffset = -numDeleted;
           var tileImageView = createTile(col, row, yOffset);
-          // var initialY = calculateY(col);
-          // animate(tileImageView).now({y: initialY - (numDeleted * tileImageView._opts.height)}, 0, animate.easeIn);
           falldownAnimateTo(tileImageView, col, row, numDeleted);
         }
       }
@@ -240,15 +238,15 @@ exports = (function () {
         var animationFinish = function () {
           turnEnd(foundTiles.concat(foundTiles2))
         };
+        tile1._opts.x = tile2Pos.x;
+        tile1._opts.y = tile2Pos.y;
         animate(tile1).now(tile2Pos, 300, animate.easeIn).then(function () {
-          tile1._opts.x = tile2Pos.x;
-          tile1._opts.y = tile2Pos.y;
 
           whenCalledTwice(animationFinish);
         });
+        tile2._opts.x = tile1Pos.x;
+        tile2._opts.y = tile1Pos.y;
         animate(tile2).now(tile1Pos, 300, animate.easeIn).then(function () {
-          tile2._opts.x = tile1Pos.x;
-          tile2._opts.y = tile1Pos.y;
           whenCalledTwice(animationFinish);
         });
       }
