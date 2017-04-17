@@ -128,6 +128,35 @@ exports = (function () {
       }
     }
 
+    function createSparkleAt(y,x,height,width) {
+      var colorNum = Math.floor(Math.random() * fixtures.gleamColors.length);
+      var color = fixtures.gleamColors[colorNum];
+      var xPos = x + (Math.random() * width);
+      var yPos = y + (Math.random() * height);
+      var sparkleImageView = new ui.ImageView({
+        superview: gridview,
+        image: 'resources/images/particles/gleam_' + color + '.png',
+        width: 0,
+        height: 0,
+        x: xPos,
+        y: yPos,
+        opacity: .6,
+      });
+      var animationTime = 550;
+      var fadeStart = 250;
+      animate(sparkleImageView).now({
+          x: xPos - 30,
+          y: yPos - 30,
+          width: 60,
+          height: 60
+        },
+        animationTime, animate.easeOutCubic
+      ).then((function () {
+        this.removeFromSuperview();
+      }).bind(sparkleImageView));
+      animate(sparkleImageView).wait(fadeStart).then({opacity: 0}, animationTime - fadeStart, animate.easeIn)
+    }
+
     function sparkle(tiles) {
       for (var i = 0; i < tiles.length; i++) {
         var tile = tiles[i];
@@ -137,32 +166,13 @@ exports = (function () {
         var width = tile._opts.width;
         var num_gleams = 3;
         for (var gleam_num = 0; gleam_num < num_gleams; gleam_num++) {
-          var colorNum = Math.floor(Math.random() * fixtures.gleamColors.length);
-          var color = fixtures.gleamColors[colorNum];
-          var xPos = x + (Math.random() * width);
-          var yPos = y + (Math.random() * height);
-          var sparkleImageView = new ui.ImageView({
-            superview: gridview,
-            image: 'resources/images/particles/gleam_' + color + '.png',
-            width: 0,
-            height: 0,
-            x: xPos,
-            y: yPos,
-            opacity: .6,
-          });
-          var animationTime = 550;
-          var fadeStart = 250;
-          animate(sparkleImageView).now({
-              x: xPos - 100,
-              y: yPos - 100,
-              width: 200,
-              height: 200
-            },
-            animationTime, animate.easeOutCubic
-          ).then((function () {
-            this.removeFromSuperview();
-          }).bind(sparkleImageView));
-          animate(sparkleImageView).wait(fadeStart).then({opacity: 0}, animationTime - fadeStart, animate.easeIn)
+
+          window.setTimeout((function (y, x, height, width) {
+            return function () {
+              createSparkleAt(y, x, height, width)
+            }
+          })(y, x, height, width), 300 * Math.random())
+
         }
 
       }
